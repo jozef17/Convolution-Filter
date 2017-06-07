@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Project Settings and other
+*.sdf
+*.sln
+*.vcxproj
+*.vcxproj.filters
