@@ -36,3 +36,4 @@
 *.sln
 *.vcxproj
 *.vcxproj.filters
+.gitattributes
