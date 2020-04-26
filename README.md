@@ -1,15 +1,17 @@
-*[SK](README.sk.md)*
-
 # Convolution Filter
 
-This Repository contains two implementations of convolution filter:
-- [Using OpenMP and OpenGL](https://github.com/jozef17/Convolution-Filter/tree/master/ConvolutionFilterWithOpenMPandOpenGL)
-- [Using Nvidia Cuda and OpenGL](https://github.com/jozef17/Convolution-Filter/tree/master/ConvolutionWithCudaandOpenGL)
+- For displaying result image was used OpenGL library
+- Parallelised with OpenMP or [Nvidia Cuda](http://www.nvidia.com/object/cuda_home_new.html)
 
-Computations are performed in parallel using OpenMP or [Nvidia Cuda](http://www.nvidia.com/object/cuda_home_new.html) and result is displayed using OpenGL.
+![Demo](demo.gif)
 
-![Demo](https://github.com/jozef17/Convolution-Filter/blob/master/demo.gif)
+# Implementation
+![Classes](Classes.png)
 
-## Interaction
+- Convolution filter is implemented as Strategy pattern (ConvolutionFilter), where each of concrete strategies implements different parallelization technology (OpenMPFilter, CudaFilter).
+- Pixel_t represents one pixel of image
+- Kernel represents convolution filter kernel
+- Window encapsulates logic for displaying and navigating in result
+- Image encapsulates image data
 
-![Activity](https://github.com/jozef17/Convolution-Filter/blob/master/activity.png)
+![Activity](activity.png)

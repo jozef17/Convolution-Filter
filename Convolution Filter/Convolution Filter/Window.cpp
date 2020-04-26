@@ -1,12 +1,12 @@
-/**
-  *
-  * @author Jozef Blazicek
-  * */
-
-#include <GLFW/glfw3.h>
 #include "Window.h"
 
-convolution_filter::Window *window = nullptr;
+#include <glfw3.h>
+#include "Image.h"
+
+#define WIDTH 512
+#define HEIGHT 512
+
+Window *window = nullptr;
 
 void keyCallback(GLFWwindow *, int key, int, int action, int)
 {
@@ -15,26 +15,29 @@ void keyCallback(GLFWwindow *, int key, int, int action, int)
 }
 
 // Copy to framebuffer part of image to be displayed
-void convolution_filter::Window::updateFramebuffer()
+void Window::updateFramebuffer()
 {
-	int index = WIDTH*HEIGHT - 1;
-	Pixel_t *data = image->getData();
+	int index = WIDTH * HEIGHT - 1;
 	int imageWidth = image->getWidth();
 
 	for (int j = 0; j < HEIGHT; j++)
 	{
 		for (int b = WIDTH - 1; b >= 0; b--)
 		{
-			framebuffer[index].red = data[(j + offset_y) * imageWidth + b + offset_x].red;
-			framebuffer[index].green = data[(j + offset_y) * imageWidth + b + offset_x].green;
-			framebuffer[index].blue = data[(j + offset_y) * imageWidth + b + offset_x].blue;
+			Pixel_t pixel = image->get(j + offset_y, b + offset_x);
+			((Pixel_t *)framebuffer)[index] = pixel;
 			index--;
 		}
 	}
 }
 
+Window::Window(Image *image) : image(image)
+{
+	framebuffer = new Pixel_t[WIDTH * HEIGHT];
+}
+
 // Handle user input - move image
-void convolution_filter::Window::move(int key, int action)
+void Window::move(int key, int action)
 {
 	switch (key)
 	{
@@ -54,7 +57,7 @@ void convolution_filter::Window::move(int key, int action)
 	updateFramebuffer();
 }
 
-void convolution_filter::Window::display()
+void Window::display()
 {
 	// Create Window
 	window = this;
@@ -95,4 +98,10 @@ void convolution_filter::Window::display()
 	// Clean up
 	glfwDestroyWindow(window);
 	glfwTerminate();
+}
+
+Window::~Window()
+{
+	if (framebuffer != nullptr)
+		delete framebuffer;
 }

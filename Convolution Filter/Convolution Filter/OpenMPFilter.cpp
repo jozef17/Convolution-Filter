@@ -1,31 +1,10 @@
-/**
-  *
-  * @author Jozef Blazicek
-  * */
+#include "OpenMPFilter.h"
+#include "Image.h"
+#include "Kernel.h"
 
-#include "Convolution.h"
 #include <omp.h>
 
-convolution_filter::Convolution::~Convolution()
-{
-	if (kernel != nullptr)
-		delete kernel;
-	if (image != nullptr)
-		delete image;
-}
-
-void convolution_filter::Convolution::setImage()
-{
-	image = convolution_filter::Image::getImage();
-}
-
-void convolution_filter::Convolution::setKernel()
-{
-	kernel = convolution_filter::Kernel::getKernel();
-	kernel->print();
-}
-
-convolution_filter::Image *convolution_filter::Convolution::applyFilter()
+Image* OpenMPFilter::applyFilter()
 {
 	if (kernel == nullptr)
 		return nullptr;
@@ -38,12 +17,12 @@ convolution_filter::Image *convolution_filter::Convolution::applyFilter()
 	unsigned int kernelHeight = kernel->getHeight();
 	int j = 0;
 
-	Pixel_t *imageData = image->getData();
+	//	Pixel_t *imageData = image->getData();
 	Pixel_t *resultImage = new Pixel_t[imageWidth*imageHeight];
 	float **kernelData = kernel->getData();
 
 	// For every pixel
-#pragma omp parallel for shared(imageHeight, imageWidth, kernelHeight, kernelWidth, imageData, resultImage, kernelData, j)
+#pragma omp parallel for shared(imageHeight, imageWidth, kernelHeight, kernelWidth, image, resultImage, kernelData, j)
 	for (j = 0; j < imageHeight; j++)
 	{
 		for (unsigned int b = 0; b < imageWidth; b++)
@@ -71,31 +50,22 @@ convolution_filter::Image *convolution_filter::Convolution::applyFilter()
 						y1 = (imageHeight - y1) % imageHeight;
 					}
 
-					red += imageData[y1*imageWidth + x1].red * kernelData[x][y];
-					green += imageData[y1*imageWidth + x1].green * kernelData[x][y];
-					blue += imageData[y1*imageWidth + x1].blue * kernelData[x][y];
+					Pixel_t pixel = image->get(y1, x1);
+					red += pixel.red * kernelData[x][y];
+					green += pixel.green * kernelData[x][y];
+					blue += pixel.blue * kernelData[x][y];
 				}
 			}
 
-			if (red < 0)
-				red = 0;
-			else if (red > 255)
-				red = 255;
-
-			if (green < 0)
-				green = 0;
-			else if (green > 255)
-				green = 255;
-
-			if (blue < 0)
-				blue = 0;
-			else if (blue > 255)
-				blue = 255;
+			red = red < 0 ? 0 : red > 255 ? 255 : red;
+			green = green < 0 ? 0 : green > 255 ? 255 : green;
+			blue = blue < 0 ? 0 : blue > 255 ? 255 : blue;
 
 			resultImage[j*imageWidth + b].red = (unsigned char)red;
 			resultImage[j*imageWidth + b].green = (unsigned char)green;
 			resultImage[j*imageWidth + b].blue = (unsigned char)blue;
 		}
 	}
+
 	return new Image(imageWidth, imageHeight, resultImage);
 }

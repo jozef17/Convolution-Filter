@@ -1,42 +1,9 @@
-/**
-  *
-  * @author Jozef Blazicek
-  * */
+#include "CudaFilter.cuh"
 
-#include "Convolution.cuh"
+#include "Image.h"
+#include "Kernel.h"
 
-Image *applyFilter(Image *image, Kernel * kernel)
-{
-	int imageSize = image->getHeight()*image->getWidth()*sizeof(Pixel_t);
-	int kernelSize = kernel->getHeight()*kernel->getWidth()*sizeof(float);
-
-	// Copy data to GPU's memory
-	void * c_kernel = copyToGRAM(kernelSize, kernel->getData());
-	void * c_image = copyToGRAM(imageSize, image->getData());
-	void * c_result;
-
-	cudaMalloc(&c_result, imageSize);
-	cudaDeviceSynchronize();
-
-	if (c_kernel == nullptr || c_image == nullptr)
-		return nullptr;
-
-	// Run code on GPU
-	c_applyFilter <<< 128, 128 >>> ((float *)c_kernel, kernel->getWidth(), kernel->getHeight(), (Pixel_t *)c_image, image->getWidth(), image->getHeight(), (Pixel_t *)c_result);
-	cudaDeviceSynchronize();
-
-	Pixel_t *result = new Pixel_t[image->getWidth()*image->getHeight()];
-	cudaMemcpy(result, c_result, imageSize, cudaMemcpyDeviceToHost);
-	cudaDeviceSynchronize();
-
-	cudaFree(c_kernel);
-	cudaFree(c_image);
-	cudaFree(c_result);
-
-	return new Image(image->getWidth(), image->getHeight(), result);
-}
-
-void *copyToGRAM(int size, void *data)
+void *CudaFilter::copyToGRAM(int size, void *data)
 {
 	void * c_data;
 	cudaError_t error;
@@ -57,10 +24,14 @@ void *copyToGRAM(int size, void *data)
 		return nullptr;
 	}
 	return c_data;
+
 }
 
-__global__ void c_applyFilter(float *kernelData, int kernelWidth, int kernelHeight, Pixel_t *imageData, int imageWidth, int imageHeight, Pixel_t * result)
+__global__ void c_applyFilter(float *kernelData, int kernelWidth, int kernelHeight, void *imgData, int imageWidth, int imageHeight, void * res)
 {
+	Pixel_t * imageData = (Pixel_t *)imgData;
+	Pixel_t * result = (Pixel_t *)res;
+
 	int block = blockIdx.x;
 	int thread = threadIdx.x;
 	int x1, y1;
@@ -106,5 +77,35 @@ __global__ void c_applyFilter(float *kernelData, int kernelWidth, int kernelHeig
 			result[j*imageWidth + b].blue = (unsigned char)blue;
 		}
 	}
+}
 
+
+Image * CudaFilter::applyFilter()
+{
+	int imageSize = image->getHeight()*image->getWidth() * sizeof(Pixel_t);
+	int kernelSize = kernel->getHeight()*kernel->getWidth() * sizeof(float);
+
+	// Copy data to GPU memory
+	void * c_kernel = copyToGRAM(kernelSize, kernel->getData());
+	void * c_image = copyToGRAM(imageSize, image->getData());
+	void * c_result;
+
+	cudaMalloc(&c_result, imageSize);
+	cudaDeviceSynchronize();
+
+	if (c_kernel == nullptr || c_image == nullptr)
+		return nullptr;
+
+	c_applyFilter << < 128, 128 >> > ((float *)c_kernel, kernel->getWidth(), kernel->getHeight(), (Pixel_t *)c_image, image->getWidth(), image->getHeight(), (Pixel_t *)c_result);
+	cudaDeviceSynchronize();
+
+	Pixel_t *result = new Pixel_t[image->getWidth()*image->getHeight()];
+	cudaMemcpy(result, c_result, imageSize, cudaMemcpyDeviceToHost);
+	cudaDeviceSynchronize();
+
+	cudaFree(c_kernel);
+	cudaFree(c_image);
+	cudaFree(c_result);
+
+	return new Image(image->getWidth(), image->getHeight(), result);
 }
