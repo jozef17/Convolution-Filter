@@ -3,7 +3,7 @@
   *
   * @author Jozef Blazicek
   * */
-#define OPEN_MP
+#define STD
 
 #include <stdlib.h>
 #include <chrono>
@@ -11,9 +11,14 @@
 #include "Window.h"
 
 #if defined( CUDA )
+// USe cuda
 #include "CudaFilter.cuh"
 #elif defined ( OPEN_MP )
+// Use OprnMP
 #include "OpenMPFilter.h"
+#elif defined ( STD )
+// Use std::thread
+#include "StdFilter.h"
 #endif
 
 ConvolutionFilter * getFilter();
@@ -55,5 +60,7 @@ ConvolutionFilter * getFilter()
 	return new CudaFilter();
 #elif defined ( OPEN_MP )
 	return new OpenMPFilter();
+#elif defined ( STD )
+	return new StdFilter();
 #endif
 }

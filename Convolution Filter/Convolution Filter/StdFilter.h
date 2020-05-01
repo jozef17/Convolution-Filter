@@ -2,7 +2,7 @@
 
 #include "ConvolutionFilter.h"
 
-class OpenMPFilter :
+class StdFilter :
 	public ConvolutionFilter
 {
 public:

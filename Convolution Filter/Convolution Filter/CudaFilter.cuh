@@ -14,8 +14,6 @@ private:
 	void *copyToGRAM(int size, void *data);
 
 public:
-	CudaFilter() : ConvolutionFilter() {};
-
 	Image* applyFilter();
 
 };
