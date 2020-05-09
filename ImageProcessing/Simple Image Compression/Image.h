@@ -21,20 +21,22 @@ private:
 	float Cb;
 	float Cr;
 
-
 	void toRGB();
 	void toYCbCr();
 
 public:
 
+	Pixel(); // TODO
 	Pixel(Pixel_T rgb);
 	Pixel(float y, float cb, float cr);
-
-	Pixel_T getRGB() const;
 
 	float getY() const;
 	float getCb() const;
 	float getCr() const;
+	Pixel_T getRGB() const;
+
+	void set(Pixel_T rgb);
+	void set(float Y, float Cb, float Cr);
 
 };
 
@@ -49,12 +51,20 @@ protected:
 	Image();
 
 public:
-//	Image(unsigned int width, unsigned int height, std::vector<std::unique_ptr<Pixel>> data);
+	Image(unsigned int width, unsigned int height);
 
-	Pixel_T get(unsigned int x, unsigned int y);
+	// Get Pixel Value
+	Pixel_T get(unsigned int x, unsigned int y) const;
+	float getY(unsigned int x, unsigned int y) const;
+	float getCb(unsigned int x, unsigned int y) const;
+	float getCr(unsigned int x, unsigned int y) const;
 
-	unsigned int getWidth();
-	unsigned int getHeight();
+	unsigned int getWidth() const;
+	unsigned int getHeight() const;
+
+	// Set pixel value
+	void set(unsigned int x, unsigned int y, Pixel_T rgb);
+	void set(unsigned int x, unsigned int y, float Y, float Cb, float Cr);
 
 };
 

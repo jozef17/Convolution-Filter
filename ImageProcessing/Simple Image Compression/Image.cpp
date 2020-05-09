@@ -18,6 +18,8 @@ void Pixel::toYCbCr()
 	Cr = 0.439 * rgb.red - 0.368 * rgb.green - 0.071 * rgb.blue + 128;
 }
 
+Pixel::Pixel() : rgb{ 0,0,0 }, Y(0.0), Cb(0.0), Cr(0.0) {}
+
 Pixel::Pixel(Pixel_T rgb) : rgb(rgb)
 {
 	toYCbCr();
@@ -26,11 +28,6 @@ Pixel::Pixel(Pixel_T rgb) : rgb(rgb)
 Pixel::Pixel(float y, float cb, float cr) : Y(y), Cb(cb), Cr(cr)
 {
 	toRGB();
-}
-
-Pixel_T Pixel::getRGB() const
-{
-	return rgb;
 }
 
 float Pixel::getY() const
@@ -48,13 +45,40 @@ float Pixel::getCr() const
 	return Cr;
 }
 
+Pixel_T Pixel::getRGB() const
+{
+	return rgb;
+}
+
+void Pixel::set(Pixel_T rgb)
+{
+	this->rgb = rgb;
+	toYCbCr();
+}
+
+void Pixel::set(float Y, float Cb, float Cr)
+{
+	this->Y = Y;
+	this->Cb = Cb;
+	this->Cr = Cr;
+	toRGB();
+}
 
 
 Image::Image() { }
 
-//Image::Image(unsigned int width, unsigned int height, std::vector<std::unique_ptr<Pixel>> data) : width(width), height(height), data(data) { }
+Image::Image(unsigned int width, unsigned int height) : width(width), height(height)
+{
 
-Pixel_T Image::get(unsigned int y, unsigned int x)
+	int b = 0;
+	data.resize(width * height);
+
+	for (unsigned int j = 0; j < width * height; j++) {
+		data[b++] = std::make_unique<Pixel>();
+	}
+}
+
+Pixel_T Image::get(unsigned int y, unsigned int x)  const
 {
 	if ((x >= width) || (y >= height))
 		return Pixel_T();
@@ -62,14 +86,56 @@ Pixel_T Image::get(unsigned int y, unsigned int x)
 	return data[y * width + x]->getRGB();
 }
 
-unsigned int Image::getWidth()
+float Image::getY(unsigned int x, unsigned int y)  const
+{
+	if ((x >= width) || (y >= height))
+		return -1;
+
+	return data[y * width + x]->getY();
+}
+
+float Image::getCb(unsigned int x, unsigned int y)  const
+{
+	if ((x >= width) || (y >= height))
+		return -1;
+
+	return data[y * width + x]->getCb();
+
+}
+
+float Image::getCr(unsigned int x, unsigned int y)  const
+{
+	if ((x >= width) || (y >= height))
+		return -1;
+
+	return data[y * width + x]->getCr();
+
+}
+
+unsigned int Image::getWidth() const
 {
 	return width;
 }
 
-unsigned int Image::getHeight()
+unsigned int Image::getHeight() const
 {
 	return height;
+}
+
+void Image::set(unsigned int x, unsigned int y, Pixel_T rgb)
+{
+	if ((x >= width) || (y >= height))
+		return;
+
+	data[y * width + x]->set(rgb);
+}
+
+void Image::set(unsigned int x, unsigned int y, float Y, float Cb, float Cr)
+{
+	if ((x >= width) || (y >= height))
+		return;
+
+	data[y * width + x]->set(Y, Cb, Cr);
 }
 
 
