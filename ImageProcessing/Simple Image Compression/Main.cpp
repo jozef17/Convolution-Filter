@@ -1,61 +1,81 @@
-#include "Image.h"
 #include "Window.h"
-
-#include "DCT.h"
+#include "ImageCompressor.h"
+#include "Image.h"
 
 #include <iostream>
 #include <iomanip>
 
+Image *getImage();
+int getQuality();
+
 int main()
 {
-	// Original Image
-	Image *dct = new Image(8, 8);
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
-			unsigned char X;
-			if (i % 2 == 0)
-				X = (unsigned char)(((i % 2) * 255) + (j % 2) * 255);
-			else
-				X = j % 2 == 0 ? 255 : 0;
+	// Get Image
+	Image *img = nullptr;
+	while (img == nullptr)
+		img = getImage();
 
-			std::cout <<(int) X  << " ";
-			dct->set(i, j, (float)X, 0, 0);
-		}
-	}
-	std::cout << std::endl;
-	std::cout << "------------------------------------------" << std::endl;
+	int quality = getQuality();
 
-	// DCT
-	Image *dctRes = DCT::dct(*dct);
-	for (int i = 0; i < 8; i++)
-	{
-		for (int j = 0; j < 8; j++)
-			std::cout << (int) dctRes->getY(i, j) << " ";
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	std::cout << "------------------------------------------" << std::endl;
+	float alpha = ImageCompressor::getAlpha(quality);
+	Image *encoded = ImageCompressor::encode(*img, alpha);
+	Image *decoded = ImageCompressor::decode(*encoded, alpha);
 
-	// IDCT
-	Image *idctRes = DCT::idct(*dctRes);
-	for (int i = 0; i < 8; i++)
-	{
-		for (int j = 0; j < 8; j++)
-			std::cout << (int)idctRes->getY(i, j) << " ";
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+	delete img;
+	delete encoded;
 
-	delete dct;
-	delete dctRes;
-	delete idctRes;
+	Window w(decoded);
+	w.display("Simple Image Compression");
 
-//	Image *i = new BPMImage("C:\\Image.bmp");
-//	Window *w = new Window(i);
-//	w->display("Test");
-
-//	delete i;
-//	delete w;
+	delete decoded;
 
 	return 0;
+}
+
+Image *getImage()
+{
+	std::string filename;
+	int width, height;
+
+	std::cout << "Insert filename: ";
+	std::cin >> filename;
+
+	if (filename.at(filename.length() - 4) == '.' &&
+		filename.at(filename.length() - 3) == 'b' &&
+		filename.at(filename.length() - 2) == 'm' &&
+		filename.at(filename.length() - 1) == 'p')
+	{
+		try 
+		{
+			return new BPMImage(filename);
+		}
+		catch (std::string s) 
+		{
+			std::cout << s << std::endl;
+			return nullptr;
+		}
+	}
+	else
+	{
+		std::cout << "Specify image height: ";
+		std::cin >> height;
+		std::cout << "Specfy image width:";
+		std::cin >> width;
+
+		return new RGBImage(width, height, filename);
+	}
+}
+
+int getQuality()
+{
+	int quality;
+
+	while (true) 
+	{
+		std::cout << "Specify result image quality (0% - 100%): ";
+		std::cin >> quality;
+
+		if ((quality >= 0) && (quality <= 100))
+			return quality;
+	}
 }

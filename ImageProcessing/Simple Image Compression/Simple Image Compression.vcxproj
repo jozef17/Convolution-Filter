@@ -152,13 +152,18 @@
   <ItemGroup>
     <ClCompile Include="DCT.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="ImageCompressor.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DCT.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="ImageCompressor.h" />
     <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

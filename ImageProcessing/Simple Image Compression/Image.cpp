@@ -6,16 +6,30 @@
 
 void Pixel::toRGB()
 {
+#ifndef USE_JPEG_CONV
 	rgb.red = 1.164 * (Y - 16) + 1.596 * (Cr - 128);
 	rgb.green = 1.164 * (Y - 16) - 0.813 * (Cr - 128) - 0.392 * (Cb - 128);
 	rgb.blue = 1.164 * (Y - 16) + 2.017 * (Cb - 128);
+#else
+	// JPEG conversion
+	rgb.red = Y + 1.402 * (Cr - 128);
+	rgb.green = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128);
+	rgb.blue = Y + 1.772 * (Cb - 128);
+#endif
 }
 
 void Pixel::toYCbCr()
 {
+#ifndef USE_JPEG_CONV
 	Y = 0.257 * rgb.red + 0.504 * rgb.green + 0.098 * rgb.blue + 16;
 	Cb = -0.148 * rgb.red - 0.291 * rgb.green + 0.439 * rgb.blue + 128;
 	Cr = 0.439 * rgb.red - 0.368 * rgb.green - 0.071 * rgb.blue + 128;
+#else
+	// Jpeg Conversion
+	Y = 0.299 * rgb.red + 0.587 * rgb.green + 0.114 * rgb.blue;
+	Cb = -0.168736 * rgb.red - 0.331264 * rgb.green + 0.5 * rgb.blue + 128;
+	Cr = 0.5 * rgb.red - 0.418688 * rgb.green - 0.081312 * rgb.blue + 128;
+#endif
 }
 
 Pixel::Pixel() : rgb{ 0,0,0 }, Y(0.0), Cb(0.0), Cr(0.0) {}
@@ -83,7 +97,7 @@ Pixel_T Image::get(unsigned int y, unsigned int x)  const
 	if ((x >= width) || (y >= height))
 		return Pixel_T();
 
-	return data[y * width + x]->getRGB();
+	return data[(width - y - 1) * width + x]->getRGB();
 }
 
 float Image::getY(unsigned int x, unsigned int y)  const
@@ -159,7 +173,8 @@ RGBImage::RGBImage(unsigned int width, unsigned int height, std::string file)
 BPMImage::BPMImage(std::string fileName)
 {
 	std::ifstream file(fileName, std::ios::binary);
-	// TODO file exists ???
+	if (!file)
+		throw "File " + fileName + " Does not Exist";
 
 	BITMAPFILEHEADER *bmpHeader = (BITMAPFILEHEADER *)new unsigned char[sizeof(BITMAPFILEHEADER)];
 	BITMAPINFOHEADER *bmpInfo = (BITMAPINFOHEADER *)new unsigned char[sizeof(BITMAPINFOHEADER)];; // Info 
@@ -167,7 +182,8 @@ BPMImage::BPMImage(std::string fileName)
 	file.read((char *)bmpHeader, sizeof(BITMAPFILEHEADER));
 	file.read((char *)bmpInfo, sizeof(BITMAPINFOHEADER));
 
-	// TODO BPM check bmpHeader->bfType == 0x4D42
+	if (bmpHeader->bfType != 0x4D42)
+		throw "Not bpm file";
 
 	this->height = bmpInfo->biHeight;
 	this->width = bmpInfo->biWidth;

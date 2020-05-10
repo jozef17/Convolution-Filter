@@ -17,9 +17,7 @@ private:
 	Pixel_T rgb;
 
 	// YCbCe
-	float Y;
-	float Cb;
-	float Cr;
+	float Y, Cb, Cr;
 
 	void toRGB();
 	void toYCbCr();
@@ -44,7 +42,7 @@ class Image
 {
 protected:
 	std::vector<std::unique_ptr<Pixel>> data;
-	//Pixel **data = nullptr;
+
 	unsigned int width = 0;
 	unsigned int height = 0;
 

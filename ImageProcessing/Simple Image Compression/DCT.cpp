@@ -10,7 +10,7 @@ void DCT::dctBlock(Image & in, Image & out, int xOffset, int yOffset)
 	double sum[3];
 
 	int M = (in.getWidth() - xOffset) > 8 ? 8 : in.getWidth() - xOffset;
-	int N = (in.getHeight() - xOffset) > 8 ? 8 : in.getHeight() - xOffset;
+	int N = (in.getHeight() - yOffset) > 8 ? 8 : in.getHeight() - yOffset;
 
 	double f = (double)2.0 / std::sqrt((double)M * (double)N);
 
