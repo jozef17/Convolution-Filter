@@ -2,7 +2,11 @@
 #include "Image.h"
 
 #include <cmath>
+#include <thread>
+#include <vector>
 #include <corecrt_math_defines.h>
+
+#define NUM_THREADS 8
 
 // Calculates DCT for 8 by 8 block
 void DCT::dctBlock(Image & in, Image & out, int xOffset, int yOffset)
@@ -28,7 +32,7 @@ void DCT::dctBlock(Image & in, Image & out, int xOffset, int yOffset)
 			{
 				for (int y = 0; y < N; y++)
 				{
-					double cos = std::cos(((2 * x + 1) * m * M_PI) / (2 * M)) * std::cos( ((2 * y + 1) * n * M_PI) / (2 * N));
+					double cos = std::cos(((2 * x + 1) * m * M_PI) / (2 * M)) * std::cos(((2 * y + 1) * n * M_PI) / (2 * N));
 					sum[0] += in.getY(xOffset + x, yOffset + y) * cos;
 					sum[1] += in.getCb(xOffset + x, yOffset + y) * cos;
 					sum[2] += in.getCr(xOffset + x, yOffset + y) * cos;
@@ -48,7 +52,7 @@ void DCT::dctBlock(Image & in, Image & out, int xOffset, int yOffset)
 }
 
 // Calculates INverse DCT for 8 by 8 block
-void DCT::idctBlock(Image & in, Image & out, int xOffset, int yOffset) 
+void DCT::idctBlock(Image & in, Image & out, int xOffset, int yOffset)
 {
 	double sum[3];
 
@@ -95,14 +99,24 @@ Image * DCT::dct(Image & image)
 {
 	Image *img = new Image(image.getWidth(), image.getHeight());
 
-	for (unsigned int j = 0; j < image.getWidth(); j += 8)
-	{
-		for (unsigned int b = 0; b < image.getHeight(); b += 8)
+	// Process (8x8) blocks in parallel
+	std::vector<std::thread> threads;
+	for (int i = 0; i < NUM_THREADS; i++) {
+		threads.push_back(std::thread([&](int id) -> void
 		{
-			// Process 8x8 blocks
-			dctBlock(image, *img, j, b);
-		}
+			for (unsigned int j = id * 8; j < image.getWidth(); j += 8 * NUM_THREADS)
+			{
+				for (unsigned int b = 0; b < image.getHeight(); b += 8)
+				{
+					// Process 8x8 blocks
+					dctBlock(image, *img, j, b);
+				}
+			}
+		}, i));
 	}
+
+	for (int i = 0; i < NUM_THREADS; i++)
+		threads[i].join();
 
 	return img;
 }
@@ -111,15 +125,25 @@ Image * DCT::idct(Image & image)
 {
 	Image *img = new Image(image.getWidth(), image.getHeight());
 
-	// Process 8x8 blocks
-	for (unsigned int j = 0; j < image.getWidth(); j += 8)
+	// Process (8x8) blocks in parallel
+	std::vector<std::thread> threads;
+	for (int i = 0; i < NUM_THREADS; i++)
 	{
-		for (unsigned int b = 0; b < image.getHeight(); b += 8)
+		threads.push_back(std::thread([&](int id) -> void
 		{
-			// Process 8x8 blocks
-			idctBlock(image, *img, j, b);
-		}
+			for (unsigned int j = id * 8; j < image.getWidth(); j += 8 * NUM_THREADS)
+			{
+				for (unsigned int b = 0; b < image.getHeight(); b += 8)
+				{
+					// Process 8x8 blocks
+					idctBlock(image, *img, j, b);
+				}
+			}
+		}, i));
 	}
+
+	for (int i = 0; i < NUM_THREADS; i++)
+		threads[i].join();
 
 	return img;
 }
