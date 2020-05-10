@@ -18,52 +18,34 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConvolutionFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenMPFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Kernel.cpp">
+    <ClCompile Include="DCT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdFilter.cpp">
+    <ClCompile Include="ImageCompressor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConvolutionFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenMPFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Kernel.h">
+    <ClInclude Include="DCT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StdFilter.h">
+    <ClInclude Include="ImageCompressor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="CudaFilter.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="CudaFilter.cu">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

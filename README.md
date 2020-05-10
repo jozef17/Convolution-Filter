@@ -1,17 +1,15 @@
-# Convolution Filter
+# Image Processing
 
-- For displaying result image was used OpenGL library
-- Parallelised with OpenMP, [Nvidia Cuda](http://www.nvidia.com/object/cuda_home_new.html) or C++ 11's std::thread
+- Image Processing Projects in C++
+- OpenGL is used for displaying result image
+- Visual Studio 2017 project
 
-![Demo](demo.gif)
+## [Convolution Filter](ImageProcessing/Convolution%20Filter)
+- Parallelized convolution filter (OpenMP, CUDA, std::thread)
+- Pre-defined filters
+![Demo](ImageProcessing/Convolution%20Filter/demo.gif)
 
-# Implementation
-![Classes](Classes.png)
+## [Simple Image Compression](ImageProcessing/Simple%20Image%20Compression)
+- Simplified JPEG compression algorithm
 
-- Convolution filter is implemented as Strategy pattern (ConvolutionFilter), where each of concrete strategies implements different parallelization technology (OpenMPFilter, CudaFilter, StdFilter).
-- Pixel_t represents one pixel of image
-- Kernel represents convolution filter kernel
-- Window encapsulates logic for displaying and navigating in result
-- Image encapsulates image data
-
-![Activity](activity.png)
+![Demo](ImageProcessing/Simple%20Image%20Compression/img/demo.gif)
