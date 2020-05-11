@@ -74,10 +74,10 @@ public:
 
 };
 
-class BPMImage
+class BMPImage
 	: public Image
 {
 public:
-	BPMImage(std::string file);
+	BMPImage(std::string file);
 
 };

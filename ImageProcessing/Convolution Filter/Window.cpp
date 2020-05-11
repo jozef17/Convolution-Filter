@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include "Image.h"
 
 #define WIDTH 512
@@ -18,7 +18,6 @@ void keyCallback(GLFWwindow *, int key, int, int action, int)
 void Window::updateFramebuffer()
 {
 	int index = WIDTH * HEIGHT - 1;
-	int imageWidth = image->getWidth();
 
 	for (int j = 0; j < HEIGHT; j++)
 	{

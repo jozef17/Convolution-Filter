@@ -2,6 +2,8 @@
 #include "DCT.h"
 #include "Image.h"
 
+#include <cmath>
+
 // Quantization tables
 static const unsigned char QL[8][8] = { { 16, 11, 10, 16,  24,  40,  51,  61 },
 										{ 12, 12, 14, 19,  26,  58,  60,  55 },
@@ -45,9 +47,9 @@ Image * ImageCompressor::encode(Image &img, float alpha)
 			{
 				for (int y = 0; y < N; y++)
 				{
-					float Y = std::round(res->getY(j + x, b + y) / (alpha * QL[x][y]));
-					float Cb = std::round(res->getCb(j + x, b + y) / (alpha * QC[x][y]));
-					float Cr = std::round(res->getCr(j + x, b + y) / (alpha * QC[x][y]));
+					float Y = round(res->getY(j + x, b + y) / (alpha * QL[x][y]));
+					float Cb = round(res->getCb(j + x, b + y) / (alpha * QC[x][y]));
+					float Cr = round(res->getCr(j + x, b + y) / (alpha * QC[x][y]));
 
 					res->set(j + x, b + y, Y, Cb, Cr);
 				} // y

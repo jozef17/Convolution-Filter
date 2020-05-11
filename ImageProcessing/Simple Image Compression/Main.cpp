@@ -47,7 +47,7 @@ Image *getImage()
 	{
 		try 
 		{
-			return new BPMImage(filename);
+			return new BMPImage(filename);
 		}
 		catch (std::string s) 
 		{

@@ -3,6 +3,7 @@
 - Image Processing Projects in C++
 - OpenGL is used for displaying result image
 - Visual Studio 2017 project
+- Cross platform: Windows & Linux / Unix
 
 ## [Convolution Filter](ImageProcessing/Convolution%20Filter)
 - Parallelized convolution filter (OpenMP, CUDA, std::thread)

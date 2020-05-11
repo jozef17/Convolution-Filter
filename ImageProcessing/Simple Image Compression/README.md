@@ -46,3 +46,23 @@
 - Calculated for every image block
 
 <p align="center"><img src="img/IDCT.png"></p>
+
+# Compile on Linux / Unix
+1. Install glfw
+```
+sudo apt-get update
+sudo apt-get install libglfw3
+sudo apt-get install libglfw3-dev
+```
+2. Go to source directory
+```
+cd ".../Image-Processing/ImageProcessing/Simple Image Compression"
+```
+3. Compile
+```
+g++ `find . -type f -name \*.cpp` `find . -type f -name \*.h` -std=c++14 -lglfw -lGL -lpthread -o ./SimpleImageCompressor
+```
+4. Run
+```
+./SimpleImageCompressor
+```

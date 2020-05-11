@@ -1,6 +1,8 @@
 #include "Kernel.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <iostream>
 #include <iomanip>
 
@@ -19,9 +21,10 @@ Kernel::~Kernel()
 
 void Kernel::print() const
 {
+#ifdef _WIN32
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(h, 10);
-
+#endif
 	std::cout << "Kernel Width is:  " << (int)width << std::endl;
 	std::cout << "Kernel Height is: " << (int)height << std::endl;
 	std::cout << "Kernel Data:" << std::endl;
@@ -35,6 +38,7 @@ void Kernel::print() const
 		}
 		std::cout << std::endl;
 	}
-
+#ifdef _WIN32
 	SetConsoleTextAttribute(h, 15);
+#endif
 }

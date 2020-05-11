@@ -1,6 +1,8 @@
 #include "ConvolutionFilter.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <iomanip>
 #include <iostream>
 
@@ -9,8 +11,9 @@
 
 Kernel *ConvolutionFilter::specifyKernel()
 {
+#ifdef _WIN32
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-
+#endif
 	int width, height;
 	float** data;
 
@@ -20,9 +23,13 @@ Kernel *ConvolutionFilter::specifyKernel()
 		std::cin >> height;
 		if (height % 2 == 0)
 		{
+#ifdef _WIN32
 			SetConsoleTextAttribute(h, 12);
+#endif
 			std::cout << "Error: Kernel height must be odd number" << std::endl;
+#ifdef _WIN32
 			SetConsoleTextAttribute(h, 15);
+#endif
 		}
 	} while (height % 2 == 0);
 
@@ -32,9 +39,13 @@ Kernel *ConvolutionFilter::specifyKernel()
 		std::cin >> width;
 		if (width % 2 == 0)
 		{
+#ifdef _WIN32
 			SetConsoleTextAttribute(h, 12);
+#endif
 			std::cout << "Error: Kernel width must be odd number" << std::endl;
+#ifdef _WIN32
 			SetConsoleTextAttribute(h, 15);
+#endif
 		}
 	} while (width % 2 == 0);
 
@@ -56,8 +67,10 @@ Kernel *ConvolutionFilter::specifyKernel()
 
 ConvolutionFilter::ConvolutionFilter()
 {
+#ifdef _WIN32
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(h, 15);
+#endif
 }
 
 void ConvolutionFilter::setImage()

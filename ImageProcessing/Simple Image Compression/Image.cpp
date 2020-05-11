@@ -1,8 +1,39 @@
 #include "Image.h"
 
 #include <fstream>
+#ifdef _WIN32
 #include <Windows.h>
 #include <wingdi.h>
+#else
+
+typedef int LONG;
+typedef unsigned int DWORD;
+typedef unsigned short WORD;
+
+typedef struct tagBITMAPFILEHEADER
+{
+    WORD    bfType;
+    DWORD   bfSize;
+    WORD    bfReserved1;
+    WORD    bfReserved2;
+    DWORD   bfOffBits;
+} __attribute__((packed)) BITMAPFILEHEADER;
+
+typedef struct tagBITMAPINFOHEADER
+{
+    DWORD    biSize;
+    LONG     biWidth;
+    LONG     biHeight;
+    WORD     biPlanes;
+    WORD     biBitCount;
+    DWORD    biCompress;
+    DWORD    biSizeImage;
+    LONG     biXPelsPerMeter;
+    LONG     biYPelsPerMeter;
+    DWORD    biClrUsed;
+    DWORD    biClrImportant;
+} __attribute__((packed)) BITMAPINFOHEADER;
+#endif
 
 void Pixel::toRGB()
 {
@@ -170,7 +201,7 @@ RGBImage::RGBImage(unsigned int width, unsigned int height, std::string file)
 	delete rawData;
 }
 
-BPMImage::BPMImage(std::string fileName)
+BMPImage::BMPImage(std::string fileName)
 {
 	std::ifstream file(fileName, std::ios::binary);
 	if (!file)
@@ -207,4 +238,5 @@ BPMImage::BPMImage(std::string fileName)
 		data[b++] = std::make_unique<Pixel>(pixel);
 	}
 
+	delete buffer;
 }
